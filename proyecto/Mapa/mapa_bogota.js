@@ -175,7 +175,7 @@ function cargarInformacionTaxonomia(pin) {
                 { propiedad: "Direccion", nombreCasilla: "Direccion" },
                 { propiedad: "nombrej", nombreCasilla: "Jardin Botanico" },
                 { propiedad: "superficie", nombreCasilla: "Superficie" },
-                //{ propiedad: "ubicacion", nombreCasilla: "Ubicacion del Jardin" },
+                { propiedad: "ubicacion", nombreCasilla: "Ubicacion del Jardin" },
                 { propiedad: "nombrez", nombreCasilla: "Zona de Reserva" },
                 { propiedad: "inicio_flora", nombreCasilla: "Inicio de Flora" },
                 { propiedad: "fin_flora", nombreCasilla: "Finalizacion de Flora" }
@@ -200,6 +200,24 @@ function cargarInformacionTaxonomia(pin) {
             contenidoTaxonomia.appendChild(listacuidado);
 
             
+            if (plantaData.investigaciones && plantaData.investigaciones.length > 0) {
+                var investigacionesTitulo = document.createElement("h3");
+                investigacionesTitulo.textContent = "Investigaciones";
+                contenidoTaxonomia.appendChild(investigacionesTitulo);
+
+                var listaInvestigaciones = document.createElement("ul");
+                plantaData.investigaciones.forEach(function (investigacion) {
+                    var li = document.createElement("li");
+                    li.innerHTML = `<strong>Autor:</strong> ${investigacion.autor} <br><strong>Título:</strong> ${investigacion.titulo} <br><strong>Información:</strong> ${investigacion.contenido}`;
+
+                    listaInvestigaciones.appendChild(li);
+                });
+                contenidoTaxonomia.appendChild(listaInvestigaciones);
+            } else {
+                var sinInvestigaciones = document.createElement("p");
+                sinInvestigaciones.textContent = "No hay investigaciones disponibles.";
+                contenidoTaxonomia.appendChild(sinInvestigaciones);
+            }
 
             // Mostrar el cuadro después de cargar los datos
             var cuadro = document.getElementById("cuadro");
@@ -211,6 +229,7 @@ function cargarInformacionTaxonomia(pin) {
     };
     xhrTaxonomia.send();
 }
+
 
 
 

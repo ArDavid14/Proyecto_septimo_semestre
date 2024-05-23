@@ -553,7 +553,7 @@ main{
         width: 45%; /* Ancho del cuadro */
         max-width: 200px; /* Ancho máximo del cuadro */
         height: 100%; /* Altura automática según el contenido */
-        background-color: var(--color-cuadro);
+        background-color: var(--color-primary);
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Sombra */
         z-index: 999; /* Asegura que el cuadro esté sobre otros elementos */
         padding: 20px;
