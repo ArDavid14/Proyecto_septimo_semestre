@@ -10,12 +10,10 @@
 </head>
 
 <body class="Adm">
-<header class="barra-sup"> 
-        <a href="Admin.html" id="titulo" class="titulo">EcoMapeoBotánico</a>
+    <header class="barra-sup">
+        <a href="Admin.html" id="Titulo" class="Titulo">EcoMapeoBotánico</a>
         <nav class="buscar">
-            <input type="text" class="busqueda">
-            <button type="submit" class="search"><i class='bx bx-search'></i></button>
-            
+            <input type="text" class="busqueda" placeholder="Buscar...">
         </nav>
         <button type="button" class="cerrar-sesion" onclick="cerrarSesion()"><i class='bx bx-log-out'></i></button>
     </header>
@@ -23,15 +21,36 @@
         <ul class="plantaslist" id="plantasContainer">
             <!-- Aquí se agregarán dinámicamente los elementos de la lista -->
         </ul>
-
-
+        <script src="verificar_sesion.js"></script>
         <script>
-            function cerrarSesion() {
-                // Aquí puedes agregar el código para cerrar la sesión, como redirigir a la página de inicio de sesión
-                window.location.href = "../LoginAdm/login.html"; // Cambia "cerrar_sesion.php" por la URL de tu script de cierre de sesión
+            document.addEventListener('DOMContentLoaded', function () {
+                // Obtenemos el campo de búsqueda
+                var campoBusqueda = document.querySelector('.busqueda');
 
-                // Reemplazar la entrada actual en el historial con la página de inicio de sesión
-                window.history.replaceState({}, document.title, "../LoginAdm/login.html");
+                // Evento de cambio en el campo de búsqueda
+                campoBusqueda.addEventListener('input', function () {
+                    var filtro = campoBusqueda.value.toLowerCase(); // Convertimos el texto de búsqueda a minúsculas
+
+                    // Seleccionamos todos los elementos de la lista de plantas
+                    var plantas = document.querySelectorAll('.plantaslist li');
+
+                    // Iteramos sobre los elementos de la lista de plantas
+                    plantas.forEach(function (planta) {
+                        var nombrePlanta = planta.textContent.toLowerCase(); // Convertimos el nombre de la planta a minúsculas
+
+                        // Si el nombre de la planta contiene el término de búsqueda, la mostramos, de lo contrario la ocultamos
+                        if (nombrePlanta.includes(filtro)) {
+                            planta.style.display = 'block';
+                        } else {
+                            planta.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            function recargarPagina() {
+                // Recargar la página actual
+                location.reload();
             }
 
             window.onload = function () {
@@ -84,54 +103,58 @@
             };
 
             document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("eliminarPlanta").addEventListener('click', function () {
-        var plantaSeleccionada = document.querySelector('.planta.seleccionada');
-        if (plantaSeleccionada) {
-            var confirmar = confirm("¿Estás seguro de que deseas eliminar esta planta?");
-            if (confirmar) {
-                var idPlanta = plantaSeleccionada.getAttribute('id');
-                var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function () {
-                    if (this.readyState == 4) {
-                        if (this.status == 200) {
-                            console.log('Respuesta del servidor:', this.responseText); // Imprimir la respuesta del servidor en la consola
-                            try {
-                                var response = JSON.parse(this.responseText);
-                                if (response.success) {
-                                    alert("Planta eliminada correctamente.");
-                                    // Redirigir a la página principal
-                                    //window.location.href = "Admin.html";
-                                } else {
-                                    alert("Error al eliminar la planta: " + response.error);
+                document.getElementById("eliminarPlanta").addEventListener('click', function () {
+                    var plantaSeleccionada = document.querySelector('.planta.seleccionada');
+                    if (plantaSeleccionada) {
+                        var confirmar = confirm("¿Estás seguro de que deseas eliminar esta planta?");
+                        if (confirmar) {
+                            var idPlanta = plantaSeleccionada.getAttribute('id');
+                            var xhttp = new XMLHttpRequest();
+                            xhttp.onreadystatechange = function () {
+                                if (this.readyState == 4) {
+                                    if (this.status == 200) {
+                                        console.log('Respuesta del servidor:', this.responseText); // Imprimir la respuesta del servidor en la consola
+                                        try {
+                                            var response = JSON.parse(this.responseText);
+                                            if (response.success) {
+                                                alert("Planta eliminada correctamente.");
+                                                location.reload(); // Recargar la página
+                                            } else {
+                                                alert("Error al eliminar la planta: " + response.error);
+                                            }
+                                        } catch (error) {
+                                            console.error('Error al analizar la respuesta JSON:', error); // Manejar errores al analizar JSON
+                                        }
+                                    } else {
+                                        alert("Error en la solicitud al servidor. Código de estado: " + this.status);
+                                    }
                                 }
-                            } catch (error) {
-                                console.error('Error al analizar la respuesta JSON:', error); // Manejar errores al analizar JSON
-                            }
-                        } else {
-                            alert("Error en la solicitud al servidor. Código de estado: " + this.status);
+                            };
+                            xhttp.open("GET", "eliminar_planta.php?id=" + idPlanta, true);
+                            xhttp.send();
                         }
+                    } else {
+                        alert("Seleccione una planta para eliminar.");
                     }
-                };
-                xhttp.open("GET", "eliminar_planta.php?id=" + idPlanta, true);
-                xhttp.send();
+                });
+            });
+
+            function cerrarSesion() {
+                eliminarCookie('admin_email');
+                window.location.href = "../LoginAdm/login.html";
             }
-        } else {
-            alert("Seleccione una planta para eliminar.");
-        }
-    });
-});
 
-
+            function eliminarCookie(nombre) {
+                document.cookie = nombre + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            }
         </script>
     </main>
 
     <footer class="barra-inf">
         <button type="submit" class="Addplanta"><a href="addplanta.html"><i class='bx bxs-file-plus'></i></a></button>
-        <button type="submit" class="editar" id="editarPlanta"><a href="#" class="disabled"><i
-                    class='bx bxs-pencil'></i></a></button>
+        <button type="submit" class="editar" id="editarPlanta"><a href="#" class="disabled"><i class='bx bxs-pencil'></i></a></button>
         <button type="submit" class="eliminar" id="eliminarPlanta"><i class='bx bx-trash'></i></button>
-	<button type="submit" class="mapita"><a href="../Mapa"><i class='bx bx-map-alt'></i></a></button>
-
+        <button type="submit" class="mapita"><a href="../Mapa"><i class='bx bx-map-alt'></i></a></button>
     </footer>
 </body>
 

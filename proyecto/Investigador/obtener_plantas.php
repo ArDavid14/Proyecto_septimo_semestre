@@ -13,8 +13,9 @@ if ($conn->connect_error) {
 }
 
 // Consulta para obtener las plantas
-$sql = "SELECT PLANTAS.*, IMAGEN.direccion
+$sql = "SELECT PLANTAS.*, IMAGEN.direccion,LOCALIZACION.Direccion
 FROM PLANTAS
+JOIN LOCALIZACION ON PLANTAS.ID_Planta  = LOCALIZACION.ID_LOCALI
 JOIN IMAGEN ON PLANTAS.ID_Planta = IMAGEN.FKID_Planta";
 $result = $conn->query($sql);
 
@@ -27,10 +28,15 @@ if ($result->num_rows > 0) {
         $imagen = $row["direccion"]; // Ajusta el nombre de la columna según tu esquema de base de datos
 
         // Construir el HTML con la etiqueta <img>
-        $html .= "<li class='planta' id='" . $row["ID_Planta"] . "'>";
-        $html .= "<p>" . $row["Nombrep"] . "</p>"; // Nombre de la planta
-        $html .= "<img src='" . $imagen . "' alt='" . $row["Nombrep"] . "' class='imagen-planta' width='60' height='55'>";
+        $html .= "<li class='planta' id='" . $row["ID_Planta"] . "' style='display: flex; align-items: center; margin-bottom: 10px;'>";
+        $html .= "<img src='" . $imagen . "' alt='" . $row["Nombrep"] . "' class='imagen-planta' style='margin-right: 10px;' width='60' height='55'>";
+        $html .= "<div style='flex: 1;'>";
+        $html .= "<p style='margin: 0; font-weight: bold;'>" . $row["Nombrep"] . "</p>"; // Nombre de la planta
+        $html .= "<p style='margin: 0;'>" . $row["Nombre_cientifico"] . "</p>";
+        $html .= "<p style='margin: 0;'>" . $row["Direccion"] . "</p>"; // Dirección de la planta
+        $html .= "</div>";
         $html .= "</li>";
+
     }
 } else {
     $html = "No se encontraron plantas.";
@@ -41,3 +47,5 @@ $conn->close();
 // Devolver el HTML generado
 echo $html;
 ?>
+
+
